@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Courses Platform</title>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Check if user email is already saved
+      const userEmail = getCookie("user_email");
+      if (!userEmail) {
+        // Show email modal if no cookie found
+        document.getElementById("emailModal").style.display = "block";
+      } else {
+        // Send visit request
+        logVisit(userEmail);
+      }
+    });
+
+    function setCookie(name, value, days) {
+      let expires = "";
+      if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+
+    function logVisit(email) {
+      fetch("/log_visit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: email, timestamp: new Date().toISOString() })
+      });
+    }
+
+    function submitEmail() {
+      const email = document.getElementById("emailInput").value;
+      if (email) {
+        setCookie("user_email", email, 30);
+        logVisit(email);
+        document.getElementById("emailModal").style.display = "none";
+      }
+    }
+
+    function openCourseModal(courseId) {
+      const iframe = document.getElementById("courseIframe");
+      iframe.src = "/courses/" + courseId;
+      document.getElementById("courseModal").style.display = "block";
+    }
+
+    function closeCourseModal() {
+      const iframe = document.getElementById("courseIframe");
+      iframe.src = "";
+      document.getElementById("courseModal").style.display = "none";
+    }
+  </script>
+  <style>
+    /* Inline styles for email modal popup */
+    #emailModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    #emailModalContent {
+      width: 768px;
+      height: 592px;
+      background: url('img/Image bg.png') no-repeat center;
+      position: relative;
+      padding: 20px;
+      background-size: cover;
+    }
+    #emailForm {
+      margin-top: 200px;
+      text-align: center;
+    }
+    #emailInput {
+      padding: 10px;
+      font-size: 1.2em;
+    }
+    #courseModal {
+      position: fixed;
+      top: 5%;
+      left: 10%;
+      width: 80%;
+      height: 90%;
+      background: #ffffff;
+      display: none;
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+    }
+    #courseModal iframe {
+      width: 100%;
+      height: calc(100% - 50px);
+      border: none;
+    }
+    #closeButton {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff0000;
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="container">
+  <div id="emailModal" class="d-flex">
+    <div id="emailModalContent" class="bg-light p-4 rounded">
+      <div id="emailForm">
+        <p>Please provide your email address to continue</p>
+        <input type="email" id="emailInput" class="form-control mb-3" placeholder="Email (personal or work)">
+        <button onclick="submitEmail()" class="btn btn-primary">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="courses-container row mt-5">
+    <div class="course-thumbnail col-md-3 mb-4" onclick="openCourseModal(1)" style="cursor: pointer;">
+      <div class="card">
+        <div class="card-body text-center">
+          <p>Skill Training</p>
+        </div>
+      </div>
+    </div>
+    <div class="course-thumbnail col-md-3 mb-4" onclick="openCourseModal(2)" style="cursor: pointer;">
+      <div class="card">
+        <div class="card-body text-center">
+          <p>New Hire Training</p>
+        </div>
+      </div>
+    </div>
+    <!-- Add more course thumbnails as needed -->
+  </div>
+
+  <div id="courseModal">
+    <button id="closeButton" onclick="closeCourseModal()">X</button>
+    <iframe id="courseIframe"></iframe>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

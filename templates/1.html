@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Course Views by Users</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>User Email</th>
+            <th>Signup Date</th>
+            {% for course in courses %}
+            <th>{{ course.title }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.email }}</td>
+            <td>{{ user_course_views[user.id]['signup_date'].strftime('%d-%m-%Y %I:%M %p') }}</td>
+            {% for course in courses %}
+            {% set timestamps = user_course_views[user.id]['course_views'][course.id] %}
+            <td>
+                {% if timestamps %}
+                    <div class="dropdown">
+                        <button class="dropbtn">Viewed {{ timestamps|length }} times</button>
+                        <div class="dropdown-content">
+                            {% for ts in timestamps %}
+                            <p>{{ ts.strftime('%d-%m-%Y %I:%M %p') }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    Not Viewed
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+/* Add dropdown styles */
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content p {
+    color: black;
+    padding: 5px 10px;
+    text-decoration: none;
+    display: block;
+    margin: 0;
+}
+
+.dropdown-content p:hover {
+    background-color: #f1f1f1
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>User Activity Summary</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>User Email</th>
+            <th>Signup Date</th>
+            <th>Courses Viewed</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users_data %}
+        <tr>
+            <td>{{ user.email }}</td>
+            <td>{{ user.signup_date.strftime('%d-%m-%Y %I:%M %p') }}</td>
+            <td>
+                {% if user.courses_viewed %}
+                <table class="inner-table">
+                    <thead>
+                        <tr>
+                            <th>Course Title</th>
+                            <th>Times Viewed</th>
+                            <th>View Dates</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course_title, timestamps in user.courses_viewed.items() %}
+                        <tr>
+                            <td>{{ course_title }}</td>
+                            <td>{{ timestamps|length }}</td>
+                            <td>
+                                <ul>
+                                    {% for ts in timestamps %}
+                                    <li>{{ ts.strftime('%d-%m-%Y %I:%M %p') }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                No courses viewed
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
