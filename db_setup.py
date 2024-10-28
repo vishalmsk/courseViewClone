@@ -102,8 +102,8 @@ def init_db():
         {"title": 'Ebook Authoring Platform', "style": 'Technology', "thumbnail_url": 'img43.png', "course_url": 'https://webhost.mitrmedia.com/ftp/aksorn/Others/PL_Object_Editor_ipad.mp4','description':'Ebook authoring and student assignment management platform'},
         {"title": 'Ebook Student Dashboard', "style": 'Technology', "thumbnail_url": 'img42.png', "course_url": 'https://webhost.mitrmedia.com/ftp/aksorn/Others/PL_Application_ipad.mp4','description':'Platform for students to consume content and attempt assignments '},
         {"title": 'VR Based Learning', "style": 'Technology', "thumbnail_url": 'img44.png', "course_url": 'https://demos.mitrmedia.com/demo-zip/demo/Delta_Air_1.2/index.html','description':'Using VR to train the flight crew'},
-        {"title": 'Teacher Tool for Classroom Management', "style": 'Technology', "thumbnail_url": 'img40.png', "course_url": 'https://demos.mitrmedia.com/demo-zip/demo/Klett_Classroom/index.html','description':'An application having various tools to assist teachers in effective handling of classroom'},
-         {"title": 'Geometry Tool', "style": 'Technology', "thumbnail_url": 'img25.png', "course_url": 'https://demos.mitrmedia.com/demo-zip/demo/geometry_tool/index.html','description':'A Geometry Practice application designed for students to explore and solve geometric problems. '},
+        #{"title": 'Teacher Tool for Classroom Management', "style": 'Technology', "thumbnail_url": 'img40.png', "course_url": 'https://demos.mitrmedia.com/demo-zip/demo/Klett_Classroom/index.html','description':'An application having various tools to assist teachers in effective handling of classroom'},
+        #{"title": 'Geometry Tool', "style": 'Technology', "thumbnail_url": 'img25.png', "course_url": 'https://demos.mitrmedia.com/demo-zip/demo/geometry_tool/index.html','description':'A Geometry Practice application designed for students to explore and solve geometric problems. '},
         
         
         
@@ -117,8 +117,8 @@ def init_db():
 
         # Accessibility
         #{"title": 'Enter quantities up to 6/10', "style": 'Accessibility', "thumbnail_url": 'img55.png', "course_url": 'https://webhost.mitrmedia.com/ftp/mitr_sims/Accessibility/Klett/Primary_Practice/b1/practice_1_Enter_quantities_up_to_6_10/','description':'none'},
-        {"title": 'Counting numbers till 6 - Accessible', "style": 'Accessibility', "thumbnail_url": 'img55.png', "course_url": 'https://webhost.mitrmedia.com/ftp/mitr_sims/Accessibility/Klett/Primary_Practice/b1/practice_1_Enter_quantities_up_to_6_10/','description':'Students learn counting till 6 by counting different types of items displayed on the screen. '},
-        {"title": 'Projectile Motion - Accessible', "style": 'Accessibility', "thumbnail_url": 'img16.png', "course_url": 'build2/app.html','description':'Explore projectile motion though firing a canon'},
+        #{"title": 'Counting numbers till 6 - Accessible', "style": 'Accessibility', "thumbnail_url": 'img55.png', "course_url": 'https://webhost.mitrmedia.com/ftp/mitr_sims/Accessibility/Klett/Primary_Practice/b1/practice_1_Enter_quantities_up_to_6_10/','description':'Students learn counting till 6 by counting different types of items displayed on the screen. '},
+        #{"title": 'Projectile Motion - Accessible', "style": 'Accessibility', "thumbnail_url": 'img16.png', "course_url": 'build2/app.html','description':'Explore projectile motion though firing a canon'},
         # {"title": 'Word game - Accessible', "style": 'Accessibility', "thumbnail_url": 'img28.png', "course_url": 'https://demos.mitrmedia.com/demo-zip/demo/Sadlier/Sadlier_VWBasketball/R1/index.html','description':'A game designed to read the clue and guess the word by selecting appropriate letters'},
         {"title": 'Word game - Accessible', "style": 'Accessibility', "thumbnail_url": 'img57.png', "course_url": 'https://demos.mitrmedia.com/demo-zip/demo/Sadlier/Crossword/Responsive_Beta/R3/index.html','description':'Crossword game engine for students to identify the words based on clues'},
         
