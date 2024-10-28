@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Course Platform</title>
+    <!-- Include Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* Custom styles */
+        .course-thumbnail {
+            cursor: pointer;
+            /* margin-bottom: 20px; */
+        }
+
+        /* .modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        } */
+        /* .modal-dialog-centered {
+            max-width: 80%;
+            max-height: 90%;
+        } */
+        /* .modal-content {
+            height: 100%;
+        } */
+        /* .modal-body {
+            padding: 0;
+            position: relative;
+        } */
+        .close-modal-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            z-index: 1000;
+            border: none;
+            background: white;
+            padding: 0;
+            font-size: 2rem;
+            line-height: 1;
+
+            /* font-size: 2rem;
+            color: #0080ff;
+            background: transparent;
+            border: none; */
+        }
+
+        .filter-btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .active {
+            background: #3d6ffd !important;
+            border-color: #3d6ffd !important;
+        }
+
+        .text-size {
+            font-size: 15px;
+        }
+
+        .text-size h6 {
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="parent-wrapper d-flex flex-column vh-100">
+        <nav class="navbar bg-light position-sticky top-0 left-0 z-3" style="box-shadow: 0px 4px 8px #bababa;;">
+            <div class="container-fluid ps-4">
+                <a class="navbar-brand" href="#">
+                    <img src="https://www.mitrmedia.com/wp-content/uploads/2023/10/Logo_1-1.svg" alt="Logo" height="30"
+                        class="d-inline-block align-text-top">
+                </a>
+                <button type="button" id="contactUsBtn" class="btn btn-primary">Contact Us</button>
+            </div>
+        </nav>
+
+        <div class="wrapper position-relative flex-grow-1 d-flex flex-column overflow-hidden">
+            <!-- Filter Buttons -->
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col">
+                        <h3>Filter Courses</h3>
+                        <div id="filter-buttons">
+                            <button class="btn btn-outline-secondary filter-btn active" data-style="all">All</button>
+                            {% for style in courses_by_style.keys() %}
+                            <button class="btn btn-outline-secondary filter-btn" data-style="{{ style }}">{{ style
+                                }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Display -->
+            <div class="container mt-4 flex-grow-1 overflow-scroll">
+                <div class="row g-3" id="courses-container">
+                    {% for style, courses in courses_by_style.items() %}
+                    {% for course in courses %}
+                    <div class="col-sm-6 col-md-4 col-lg-3 course-item" data-style="{{ course.style }}">
+                        <div class=" course-thumbnail bg-secondary-subtle p-2 rounded h-100 d-flex flex-column "
+                            data-course-id="{{ course.id }}">
+                            <div class="img-wrapper" style="height: 200px;">
+                                <img src="{{ url_for_with_prefix('static', filename=course.thumbnail_url) }}"
+                                    class="d-block w-100 h-100 object-fit-cover demoImage" alt="{{ course.title }}">
+                                <!-- - <img src="{{ url_for_with_prefix('static', filename=course.thumbnail_url) }}" class="d-block w-100 h-100 object-fit-cover" alt="{{ course.title }}"> -->
+                            </div>
+                            <!-- <div class="subtitle bg-light text-secondary mb-1 p-2">
+                                <span class="px-1">♥︎</span>
+                                {{course.style}}
+                            </div> -->
+                            <div class="bg-light mb-1 p-2 fw-bold py-3" style="color: #005A8C; height: 80px;">
+                                <span class="demoTitle">{{ course.title }}</span>
+                            </div>
+                            <div class="subtitle  flex-grow-1  bg-light text-secondary p-2">
+                                {{course.description}}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="course-viewer position-absolute top-0 left-0 w-100 h-100 bg-light d-none  ">
+                <Button class="close-modal-button text-primary"><i class="bi bi-x-circle"></i></Button>
+                <iframe id="courseIframe" class="modal-iframe h-100 w-100 p-3" allowfullscreen
+                    allow="autoplay; clipboard-write"></iframe>
+            </div>
+
+            <!-- Course Modal -->
+            <!-- <div class="modal fade" id="courseModal" tabindex="-1" role="dialog" aria-labelledby="courseModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document">
+                <div class="modal-content">
+                  <div class="modal-body overflow-hidden">
+                    <button type="button" class="btn-close close-modal-button border border-2 p-2 rounded-circle fs-6 border-dark" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <iframe id="courseIframe" class="modal-iframe h-100 w-100"></iframe>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+
+            <!-- Email Popup Modal -->
+            {% if not email_provided %}
+            <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel"
+                aria-hidden="true" data-bs-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content border-0 rounded-4 overflow-hidden h-100">
+                        <form id="emailForm" class="h-100">
+                            <!-- <div class="modal-header">
+                        <h5 class="modal-title">Enter Your Email</h5>
+                      </div> -->
+                            <div class="modal-body h-100 p-0">
+                                <div class="container" style="height: 500px;">
+                                    <div class="row h-100">
+                                        <div class="col p-0 d-flex flex-column justify-content-between">
+                                            <div class="form-group mb-5 p-4 ">
+                                                <h6 class="pb-4">Please provide email address to continue</h6>
+                                                <label for="userEmail">Email (personal or work)</label>
+                                                <input type="email" class="form-control mb-3" id="userEmail" required>
+                                                <button type="submit" class="btn btn-primary w-100">Continue</button>
+                                            </div>
+                                            <div class="custom-footer w-100 p-3 d-flex align-items-center">
+                                                <img alt=""
+                                                    src="https://www.mitrmedia.com/wp-content/uploads/2023/10/Logo_1-1.svg"
+                                                    height="30px" class="d-block pe-4" />
+                                                <span class="d-block text-secondary" style="font-size: 12px;">Copyright
+                                                    © 2024 MITR Learning & Media. All rights reserved.</span>
+                                            </div>
+                                        </div>
+                                        <div class="col p-0 py-4 d-none d-lg-flex">
+                                            <!-- <img class="h-100 w-100" src="{{ url_for_with_prefix('static', filename='login_bg.png') }}"/> -->
+                                            <div class="d-block h-100 bg-dark-subtle" style="width: 3px;"></div>
+                                            <div>
+                                                <p class="px-4">
+                                                    Due to intellectual property (IP) limitations, certain elements in these
+                                                    samples may be withheld or presented in a modified format to maintain
+                                                    the compliance standards. These restrictions are necessary to ensure we
+                                                    comply with all IP-related guidelines and avoid any potential
+                                                    infringements.
+                                                </p>
+                                                <p class=" pt-4 px-4">
+                                                    If you have any queries regarding these samples. Please
+                                                    feel free to reach out on:
+                                                </p>
+                                                <p class="px-4">
+                                                    Primary email: sam@mitrmedia.com <br>Secondary email: rahulb@mitrmedia.com <br>
+                                                    Contact Person: Rahul Bansal <br>Phone: +91 9867488331
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                      </div> -->
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="modal fade" tabindex="-1" id="contactusModal">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content rounded-3 overflow-hidden">
+                        <div class="modal-body p-4" style="background-color: #c3dff1;">
+                            <!-- <div class="row"> -->
+                            <!-- <h2 class="text-capitalize">connect with us</h2> -->
+                            <form class="row" id="contact-us-form">
+
+                                <div class="col-6 d-flex flex-column">
+                                    <h2 class="text-capitalize">connect with us</h2>
+                                    <div class="pt-2 text-size">
+                                        <h6 class="fw-bold mb-1 ">Website:</h6>
+                                        <span class="">https://mitrmedia.com</span>
+                                    </div>
+                                    <div class="pt-4 text-size">
+                                        <h6 class="fw-bold mb-1">Office address:</h6>
+                                        <span class="">A 615, Sagar Tech Plaza, Sakinaka, <br> Andheri E, Mumbai,
+                                            Maharashtra 400072</span>
+                                    </div>
+                                    <div class="grp pt-4 text-size mt-auto">
+                                        <h6 class="fw-bold mb-1">Have a question ?? Email us at:</h6>
+                                        <span class="">Primary email: sam@mitrmedia.com </span>
+                                        <br>
+                                        <span class="">Secondary email: rahulb@mitrmedia.com</span>
+                                        <br>
+                                        <span class="">Contact Person: Rahul Bansal</span>
+                                        <br>
+                                        <span class="">Phone: +91 9867488331</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="col">
+                                        <input required type="text" class="form-control" placeholder="First name"
+                                            aria-label="First name" name="first_name">
+                                    </div>
+                                    <div class="col pt-3">
+                                        <input required type="text" class="form-control" placeholder="Last name"
+                                            aria-label="Last name" name="last_name">
+                                    </div>
+                                    <div class="col-12 pt-3">
+                                        <input required type="email" class="form-control" placeholder="Email"
+                                            aria-label="email" name="email">
+                                    </div>
+                                    <div class="col-12 pt-3">
+                                        <input required type="text" class="form-control" placeholder="Company Name"
+                                            aria-label="Company" name="company_name">
+                                    </div>
+
+                                    <div class="col-12 pt-3">
+                                        <textarea required class="form-control" placeholder="Message"
+                                            aria-label="message" rows="4" name="message"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 pt-4 d-flex align-items-start text-size"
+                                    style="transition: all 2s linear;">
+                                    <!-- <div class="feedback text-capitalize flex-grow-1 me-2 rounded d-flex align-items-center text-light ps-2 d-none" >something went wrong</div> -->
+                                    <p>Mitr media is committed to protecting and respecting your privacy, and we’ll only
+                                        use your personal information to administer your account and to provide the
+                                        products and services you requested from us.</p>
+                                    <button type="submit" class="btn btn-primary ms-5"
+                                        id="contact_submit_btn">Submit</button>
+                                </div>
+                            </form>
+                            <!-- </div> -->
+                        </div>
+                        <!-- <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                  </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Include jQuery and Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+        <!-- Custom JS -->
+        <script>
+            $(document).ready(function () {
+			checkForDuplicateCourses();
+                const params = new URLSearchParams(window.location.search);
+        const selected = params.get('selected');
+
+        if (selected) {
+            // Fetch course URL for the selected course
+            $.ajax({
+                url: '{{ url_for_with_prefix('get_course_url') }}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ course_id: selected }),
+                success: function (response) {
+                    if (response.status === 'success') {
+                        var courseUrl = response.course_url;
+                        // Set the iframe src and show the iframe
+                        $('#courseIframe').attr('src', courseUrl);
+                        $('#courseIframe').parent().removeClass('d-none');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error loading course.');
+                }
+            });
+        }
+                const toastStyle = {
+                    text: "mail sent Successfully",
+                    className: "rounded text-capitalize",
+                    duration: 3000,
+                    destination: "https://github.com/apvarun/toastify-js",
+                    newWindow: true,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    style: {
+                        background: "#17c600",
+                    },
+                    onClick: function () { } // Callback after click
+                }
+                {% if not email_provided %}
+                // Show the email modal on page load
+                $('#emailModal').modal('show');
+                {% endif %}
+
+                // Handle email form submission
+                $('#emailForm').on('submit', function (e) {
+                    e.preventDefault();
+                    var email = $('#userEmail').val();
+                    $.ajax({
+                        url: '{{ url_for_with_prefix('submit_email') }}',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ email: email }),
+                        success: function (response) {
+                            $('#emailModal').modal('hide');
+                            // Reload the page to update the email_provided variable
+                            location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            alert('Error: ' + xhr.responseJSON.message);
+                        }
+                    });
+                });
+
+                // Handle course thumbnail click
+                $('.course-thumbnail').on('click', function () {
+                    var courseId = $(this).data('course-id');
+                    // Record the course view
+                    $.ajax({
+                        url: '{{ url_for_with_prefix('record_course_view') }}',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ course_id: courseId }),
+                        success: function (response) {
+                            // Get the course URL
+                            $.ajax({
+                                url: '{{ url_for_with_prefix('get_course_url') }}',
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify({ course_id: courseId }),
+                                success: function (response) {
+                                    if (response.status === 'success') {
+                                        var courseUrl = response.course_url;
+                                        // Set the iframe src
+                                        $('#courseIframe').attr('src', courseUrl);
+                                        const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('selected', courseId);
+            window.history.pushState({}, '', newUrl);
+                                        // Show the modal
+                                        // $('#courseModal').modal('show');
+                                        $('#courseIframe').parent().removeClass('d-none')
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    alert('Error loading course.');
+                                }
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            alert('Error recording course view.');
+                        }
+                    });
+                });
+
+                // Filter functionality.
+                $('.filter-btn').on('click', function () {
+                    $('.active').removeClass('active')
+                    // if ($(this).hasClass('active')) {
+                    //     $(this).removeClass('active')
+                    // }
+                    // else {
+                    //     $(this).addClass('active')
+                    // }
+                    $(this).addClass('active')
+
+                    var style = $(this).data('style');
+                    if (style === 'all') {
+                        $('.course-item').show();
+						checkForDuplicateCourses();
+                    } else {
+                        $('.course-item').hide();
+                        $('.course-item[data-style="' + style + '"]').show();
+    
+                    }
+					
+					
+					
+					
+                    // if (style === 'all') {
+                    //     $('.course-item').show();
+                    //     $('.filter-btn').removeClass('active')
+                    //     $(this).addClass('active')
+                    // } else {
+                    //     $('.filter-btn[data-style="' + "all" + '"]').removeClass('active');
+                    //     $('.course-item').hide();
+                    //     $('.active').toArray().forEach(ele => {
+                    //         const style1 = $(ele).data('style')
+                    //         $('.course-item[data-style="' + style1 + '"]').show();
+                    //     })
+                    // }
+                });
+
+                $('.course-viewer').children('.close-modal-button').first().on('click', function () {
+                    $('.course-viewer').addClass('d-none')
+                    $('#courseIframe').attr('src', '');
+                    const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('selected');
+            window.history.pushState({}, '', newUrl);
+                })
+
+                $('#contactUsBtn').on('click', function () {
+                    $('#contactusModal').modal('show')
+                })
+
+                $('#contact-us-form').on('submit', function (e) {
+                    e.preventDefault();
+                    $('#contact_submit_btn').prop('disabled', true)
+                    $('#contact_submit_btn').html('Submitting...')
+                    var data = {}
+                    $(this).serializeArray().forEach(function (obj, index) {
+                        data[obj.name] = obj.value;
+                    });
+
+                    console.log(data)
+                    $.ajax({
+                        url: '{{ url_for_with_prefix('submit') }}',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                        success: function (response) {
+                            // $('#emailModal').modal('hide');
+                            // // Reload the page to update the email_provided variable
+                            // location.reload();
+                            if (response.success) {
+                                Toastify({ ...toastStyle, text: response.message, style: { background: '#00d005' } }).showToast();
+                            }
+                            else {
+                                Toastify({ ...toastStyle, text: 'Something went wrong', style: { background: '#ff3c3c' } }).showToast();
+                            }
+                            $('#contact-us-form').trigger('reset')
+                            $('#contact_submit_btn').prop('disabled', false)
+                            $('#contact_submit_btn').html('Submit')
+                        },
+                        error: function (xhr, status, error) {
+                            // alert('Error: ' + xhr.responseJSON.message);
+                            console.log(xhr)
+                            Toastify({ ...toastStyle, text: 'Something went wrong', style: { background: '#ff3c3c' } }).showToast();
+                            $('#contact_submit_btn').prop('disabled', false)
+                            $('#contact_submit_btn').html('Submit')
+                        }
+                    });
+                })
+            });
+			
+			function checkForDuplicateCourses(){
+				var _courseItems = $('.course-item');
+				var imgArr = [];
+				for(var i=0;i<_courseItems.length;i++)
+				{
+					var _demoTitle = $(_courseItems[i]).find(".demoTitle").html();
+					var _demoImage = $(_courseItems[i]).find(".demoImage").attr("src");
+					if(imgArr.indexOf(_demoImage) != -1)
+					{
+						//console.log("duplicate found ==================");
+						$(_courseItems[i]).hide();
+					}
+					else{
+						imgArr.push(_demoImage);
+					}
+					
+					//console.log(i," ====== ",_demoTitle);
+					//console.log("_demoImage = ",_demoImage);
+					
+				}
+			}
+			
+        </script>
+
+</body>
+
+</html>
